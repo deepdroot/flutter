@@ -91,6 +91,7 @@ class Quakes extends StatelessWidget {
     );
   }
 
+  //teste
   void _showAlertDialog(BuildContext context, featur) {
     var alert = new AlertDialog(title: Text("${featur['type']}"),
      // content: Text("teste ${featur['geometry']['coordinates'][1]}\n${featur['geometry']['coordinates'][0]}"),
