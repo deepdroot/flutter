@@ -12,8 +12,19 @@ class Weather extends StatefulWidget {
 
 class _WeatherState extends State<Weather> {
 
+String _city;
 
+  Future _getCity(BuildContext context) async{
+    Map result = await Navigator.of(context).push(
+      MaterialPageRoute(builder: (BuildContext context){
+      return new ChangeCity();
+      })
 
+    );
+    if(result!=null&&result.containsKey("city")){
+        _city = result['city'];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +36,7 @@ class _WeatherState extends State<Weather> {
         backgroundColor: Colors.red.shade600,
         actions: <Widget>[
           new IconButton(icon: Icon(Icons.menu,),
-              onPressed: (){})
+              onPressed: (){_getCity(context);})
         ],
       ),
       body: new Stack(
@@ -42,11 +53,11 @@ class _WeatherState extends State<Weather> {
           new Container(
             alignment: Alignment.topRight,
             margin: const EdgeInsets.fromLTRB(0.0, 66.0, 16.0, 0.0),
-            child: Text("Curitiba",style: cityStyle()),
+            child: Text("${_city==null?"curitiba":_city.replaceAll("+", " ")}",style: cityStyle()),
           ),
           Container(
             alignment: Alignment.centerLeft,
-            child: updateTempWidget("curitiba"),
+            child: updateTempWidget("${_city==null?"curitiba":_city}"),
 
 
             margin: const EdgeInsets.fromLTRB(16.0, 90.0, 0.0, 0.0)
@@ -58,8 +69,9 @@ class _WeatherState extends State<Weather> {
   }
 
   Future<Map> getWeather(String apiId,String city) async{
+
     //String apiURL = "http://api.openweathermap.org/data/2.5/forecast?id=524901&APPID=$apiId&lang=pt&&unit=metric&&q=$city&units=metric";
-    String apiURL = "http://api.openweathermap.org/data/2.5/weather?APPID=$apiId&lang=pt&units=metric&q=$city";
+    String apiURL = "http://api.openweathermap.org/data/2.5/weather?APPID=$apiId&lang=pt&units=metric&q=${city}";
     http.Response response = await http.get(apiURL);
 
     return json.decode(response.body);
@@ -126,4 +138,49 @@ TextStyle cityStyle(){
     fontSize: 26.0,
     fontWeight: FontWeight.w500
   );
+}
+
+
+
+class ChangeCity extends StatelessWidget {
+  var _cityControler = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Choose your city"),
+      backgroundColor: Colors.red.shade600,),
+      body: Stack(
+        children: <Widget>[
+          new Image.asset("images/white_snow.png",
+          width: 490.0,
+          fit: BoxFit.fill,),
+          ListView(
+            children: <Widget>[
+              Padding(padding: const EdgeInsets.symmetric(vertical: 16.0,horizontal: 16.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                      labelText: "City"
+                  ),
+                  controller: _cityControler,
+                  keyboardType: TextInputType.text,
+                ),),
+              Padding(padding: const EdgeInsets.symmetric(vertical: 16.0,horizontal: 16.0),
+                child: RaisedButton(
+                  color: Colors.blueAccent,
+                  textColor: Colors.white,
+                  child: Text("Save"),
+                  onPressed: (){
+                    Navigator.pop(context,{
+                      'city':_cityControler.text
+                    });
+                  },
+                ),)
+            ],
+          )
+
+        ],
+      ),
+    );
+  }
 }
