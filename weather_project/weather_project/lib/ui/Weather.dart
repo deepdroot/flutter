@@ -12,7 +12,7 @@ class Weather extends StatefulWidget {
 
 class _WeatherState extends State<Weather> {
 
-String _city;
+String _city = utils.defautCity;
 
   Future _getCity(BuildContext context) async{
     Map result = await Navigator.of(context).push(
@@ -23,6 +23,8 @@ String _city;
     );
     if(result!=null&&result.containsKey("city")){
         _city = result['city'];
+    }else {
+      _city = utils.defautCity;
     }
   }
 
@@ -47,7 +49,7 @@ String _city;
               fit: BoxFit.fill,),
           ),
           new Container(
-              child: updateWeatherIcon(),
+              child: updateWeatherIcon(_city),
           alignment: Alignment.topRight,
           margin: const EdgeInsets.fromLTRB(0.0, 20.0, 40.0, 0.0),),
           new Container(
@@ -57,7 +59,7 @@ String _city;
           ),
           Container(
             alignment: Alignment.centerLeft,
-            child: updateTempWidget("${_city==null?"curitiba":_city}"),
+            child: updateTempWidget("${_city/*==null?"curitiba":_city*/}"),
 
 
             margin: const EdgeInsets.fromLTRB(16.0, 90.0, 0.0, 0.0)
@@ -78,8 +80,8 @@ String _city;
   }
 
 
-  Widget updateWeatherIcon(){
-    return FutureBuilder(future: getWeather(utils.appId, utils.defautCity),
+  Widget updateWeatherIcon(String city){
+    return FutureBuilder(future: getWeather(utils.appId, city),
     builder: (BuildContext context, AsyncSnapshot<Map> data){
 
         if(data.hasData){
