@@ -24,6 +24,27 @@ class Home extends StatefulWidget{
 
 class _HomeState extends State<Home> {
   var _textController = TextEditingController();
+var ftext = FutureBuilder(future: readData(),
+  builder: (BuildContext context, AsyncSnapshot<String> data){
+    if(data.hasData){
+      return Text(data.data);
+    }else{
+      return Text("No data yet");
+    }
+  },);
+
+void updateData(){
+setState(() {
+  ftext = FutureBuilder(future: readData(),
+    builder: (BuildContext context, AsyncSnapshot<String> data){
+      if(data.hasData){
+        return Text(data.data);
+      }else{
+        return Text("No data yet");
+      }
+    },);
+});
+  }
 
 
   @override
@@ -33,29 +54,32 @@ class _HomeState extends State<Home> {
       body: Column(
         children: <Widget>[
           Center(
-            child: FutureBuilder(future: readData(),
-            builder: (BuildContext context, AsyncSnapshot<String> data){
-              if(data.hasData){
-                return Text(data.data);
-              }else{
-                return Text("No data yet");
-              }
-            },),
+            child: new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ftext,
+            )
           ),
           Center(
-              child: new TextField(
-                controller: _textController,
-                decoration: InputDecoration(
-                    labelText: "String to save"
+              child: new Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: new TextField(
+                  controller: _textController,
+                  decoration: InputDecoration(
+                      labelText: "String to save"
+                  ),
                 ),
               )
           ),
           new Center(
-            child: RaisedButton(
-              onPressed: () {
-                writeMyFile(_textController.text);
-              },
-              child: Text("save"),),
+            child: new Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: RaisedButton(
+                onPressed: () {
+                  writeMyFile(_textController.text);
+                  updateData();
+                },
+                child: Text("save"),),
+            ),
           )
         ],
       ),
